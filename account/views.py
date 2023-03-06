@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
 
-from .forms import LoginForm
+from .forms import LoginForm, UserRegisterForm
 from django.contrib.auth import views
 
 
@@ -101,3 +101,21 @@ class PasswordResetConfirmView(views.PasswordResetConfirmView):
 class PasswordResetCompleteView(views.PasswordResetCompleteView):
     template_name = 'account/password_reset_complete.html'
 
+
+def register(request):
+    if request.method == 'POST':
+        user_form = UserRegisterForm(request.POST)
+        if user_form.is_valid():
+            # Creating a new user object but avoid saving it yet
+            new_user = user_form.save(commit=False)
+            # Set the chosen password
+            new_user.set_password(
+                user_form.cleaned_data['password2']
+            )
+            new_user.save()
+            return render(request, 'account/register_done.html')
+    else:
+        user_form = UserRegisterForm()
+    return render(request,
+                  'account/register.html',
+                  {'user_form': user_form})
