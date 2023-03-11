@@ -49,7 +49,11 @@ INSTALLED_APPS = [
 
     # apps
     'account.apps.AccountConfig',
+    'shortcuts.apps.ShortcutsConfig',
+
+    # auth
     'social_django',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
