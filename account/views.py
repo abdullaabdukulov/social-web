@@ -1,10 +1,11 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
-
-from .forms import LoginForm, UserRegisterForm
+from .models import UserProfile
+from .forms import LoginForm, UserRegisterForm, UserProfileEditForm, UserEditForm
 from django.contrib.auth import views
 
 
@@ -90,6 +91,7 @@ class PasswordResetView(views.PasswordResetView):
     template_name = 'account/password_reset.html'
 
 
+
 class PasswordResetDoneView(views.PasswordResetDoneView):
     template_name = 'account/password_reset_done.html'
 
@@ -113,9 +115,35 @@ def register(request):
                 user_form.cleaned_data['password2']
             )
             new_user.save()
+            UserProfile.objects.create(user=new_user)
             return render(request, 'account/register_done.html')
     else:
         user_form = UserRegisterForm()
     return render(request,
                   'account/register.html',
                   {'user_form': user_form})
+
+
+@login_required
+def edit(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(instance=request.user,
+                                 data=request.POST)
+        profile_form = UserProfileEditForm(
+                                    instance=request.user.userprofile,
+                                    data=request.POST,
+                                    files=request.FILES)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Profile updated successfully')
+        else:
+            messages.error(request, 'Error updating your profile')
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = UserProfileEditForm(
+                                    instance=request.user.userprofile)
+    return render(request,
+                  'account/edit.html',
+                  {'user_form': user_form,
+                   'profile_form': profile_form})
