@@ -47,10 +47,20 @@ def image_create(request):
 
 def image_detail(request, id, slug):
     image = get_object_or_404(Image, id=id, slug=slug)
-    # increment total image views by 1
-    total_views = r.incr(f'image:{image.id}:views')
-    # increment image ranking by 1
-    r.zincrby('image_ranking', 1, image.id)
+    session_key = f'image_views:{image.id}'
+    is_counted = request.session.get(session_key, False)
+    if not is_counted:
+        # increment total image views by 1
+        total_views = r.incr(f'image:{image.id}:views')
+        # set session flag to indicate view has been counted
+        request.session[session_key] = True
+        # increment image ranking by 1
+        r.zincrby('image_ranking', 1, image.id)
+    else:
+        # get total image views from Redis
+        count = r.get(f'image:{image.id}:views')
+        total_views = count.decode('utf-8') if count else 0
+
     return render(request,
                   'images/image/detail.html',
                   {'section': 'images',

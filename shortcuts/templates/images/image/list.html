@@ -3,7 +3,9 @@
 {% block title %}Images Shortcuted{% endblock %}
 
 {% block content %}
+ <a href="{% url 'images:create' %}" class="button" style="float: right">Create Image</a>
   <h1>Images shortcuted</h1>
+
   <div id="image-list">
     {% include "images/image/list_images.html" %}
   </div>
