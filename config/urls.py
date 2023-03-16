@@ -21,9 +21,10 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('account/', include('account.urls')),
+    path('', include('account.urls')),
     path('social-auth/', include('social_django.urls', namespace='social')),
-    path('shorts/', include('shortcuts.urls', namespace='shortcuts')),
+    path('shorts/', include('shortcuts.urls', namespace='images')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
 
 if settings.DEBUG:
