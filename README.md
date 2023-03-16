@@ -46,6 +46,7 @@ python manage.py createsuperuser
 <li>Run the server:</li>
 
 ```bash
+docker run -it --rm --name redis -p 6379:6379 redis
 python manage.py runserver
 ```
 

@@ -210,9 +210,9 @@ ABSOLUTE_URL_OVERRIDES = {
                                         args=[u.username])
 }
 
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
-REDIS_DB = 0
+REDIS_HOST = env('REDIS_HOST')
+REDIS_PORT = env('REDIS_PORT')
+REDIS_DB = env('REDIS_DB')
 
 if DEBUG:
     import mimetypes
